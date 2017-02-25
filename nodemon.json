@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "src",
+    "server"
+  ],
+  "exec": "npm run prestart && node server"
+}
