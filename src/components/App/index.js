@@ -3,10 +3,14 @@ import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
+import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn}
+    from 'material-ui/Table';
 import moment from 'moment';
 import { getMessages, saveMessages } from '../../util/rest'
 
 import './style.css';
+import {ApiAiClient, ApiAiStreamClient} from "api-ai-javascript";
+
 
 class App extends Component {
   constructor(props) {
@@ -73,24 +77,50 @@ class App extends Component {
         'overflow-x': 'hidden',
       },
     };
+
+      const client = new ApiAiClient({accessToken: 'abecb693b9c64728888f276ee1b674d0', streamClientClass: ApiAiStreamClient});
+      client.textRequest('How many unresolved Tasks we had today')
+          .then((response) => { console.log(response) })
+          .catch((error) => { console.log(error) })
+
     return (
       <div id="holder">
         <AppBar
           id="header"
           title="Chat"
         />
-        <div style={styles.chatdisplay}>
-          <ul style={styles.nopadding} id="body">
-            {this.state.messages.map(message =>
-              <li style={styles.flexdiv}>
-                <div style={styles.flex1}>{message.username}</div>
-                <div style={styles.flex1}>{moment(message.timestamp).format('DD.MM.YYYY HH:mm')}: </div>
-                <div style={styles.flex7}>{message.message}</div>
-                <div style={styles.flex1}></div>
-              </li>
-            )}
-          </ul>
-        </div>
+
+        <Table height="600">
+          <TableHeader
+
+              adjustForCheckbox="false">
+            <TableRow>
+              <TableHeaderColumn colSpan="3" tooltip="Chat" style={{textAlign: 'center'}}>
+                Chat
+              </TableHeaderColumn>
+            </TableRow>
+            <TableRow>
+              <TableHeaderColumn tooltip="The User">User</TableHeaderColumn>
+              <TableHeaderColumn tooltip="The Time">Time</TableHeaderColumn>
+              <TableHeaderColumn tooltip="The Message">Message</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+
+
+                      {this.state.messages.map(message =>
+                        <TableRow>
+                          <TableRowColumn>{message.username}</TableRowColumn>
+                          <TableRowColumn>{moment(message.timestamp).format('DD.MM.YYYY HH:mm')}</TableRowColumn>
+                          <TableRowColumn>{message.message}</TableRowColumn>
+                        </TableRow>
+                      )}
+
+          </TableBody>
+        </Table>
+
+
+
         <div id="footer">
           <TextField
             onChange={this.updateUsername}
